@@ -11,13 +11,13 @@ import static com.example.teamcity.api.enums.Endpoint.USERS;
 
 public class BaseApiTest extends BaseTest {
 
-    public void createProjectAndUser(String role, String scope) {
+    protected void createProjectAndUser(String role, String scope) {
         var user = getUserWithSpecificRoleAndScope(role, scope);
 
         superUserCheckRequests.getRequest(USERS).create(user);
     }
 
-    public User getUserWithSpecificRoleAndScope(String role, String scope) {
+    protected User getUserWithSpecificRoleAndScope(String role, String scope) {
         return testData.getUser().toBuilder()
                 .roles(Roles.builder()
                         .role(List.of(Role.builder().roleId(role).scope(scope).build()))
