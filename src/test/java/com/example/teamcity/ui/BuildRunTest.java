@@ -17,6 +17,8 @@ import static com.example.teamcity.api.enums.Endpoint.PROJECTS;
 public class BuildRunTest extends BaseUiTest {
     @Test(description = "User should be able to run a build and get hello world in a console", groups = {"Positive"})
     public void userRunsBuildAndGetsHelloWorld() {
+        String text = "Hello, world!";
+
         var userCheckRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
 
         //создаем проект и билд тайп
@@ -29,7 +31,7 @@ public class BuildRunTest extends BaseUiTest {
 
         //Заполняем билд степ
         new BuildStepEditPage()
-                .enterTextToCodeMirror("echo \"Hello, world!\"")
+                .enterTextToCodeMirror("echo " + text)
                 .clickSaveButton();
 
         //Запускаем билд
@@ -38,6 +40,6 @@ public class BuildRunTest extends BaseUiTest {
         //Проверяем что в логе есть "Hello world"
         new BuildResultsPage().showFullLogButton.click();
         new LogPage().expandAllButton.click();
-        new LogPage().logContainer.shouldHave(text("Hello, world!"));
+        new LogPage().logContainer.shouldHave(text(text));
     }
 }

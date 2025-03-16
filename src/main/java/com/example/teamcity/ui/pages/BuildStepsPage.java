@@ -8,7 +8,7 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
 public class BuildStepsPage extends BasePage {
-    private static final String BUILD_STEPS_PAGE_URL = "http://192.168.1.8:8111/admin/editBuildRunners.html?id=buildType:%s";
+    private static final String BUILD_STEPS_PAGE_URL = "/admin/editBuildRunners.html?id=buildType:%s";
     private ElementsCollection steps = $$(".editBuildStepRow");
     public SelenideElement runButton = $("[class~='runFirstBuild']");
     public static SelenideElement BuildConfigurationCreatedSuccessfullyMessage = $("#unprocessed_objectsCreated.successMessage");
