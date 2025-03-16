@@ -26,7 +26,7 @@ public class BaseUiTest extends BaseTest {
         Configuration.browserCapabilities.setCapability("selenoid:options", Map.of("enableVNC", true, "enableLog", true));
     }
 
-    @BeforeMethod(alwaysRun = true)
+    @BeforeMethod(alwaysRun = true, onlyForGroups = {"!Setup"})
     protected void login() {
         loginAs(testData.getUser());
     }
