@@ -26,7 +26,7 @@ jobs:
       package: ui
 
   manual-prod-approval:
-    needs: [automation-api, automation-ui]
+    needs: [ automation-api, automation-ui]
     runs-on: ubuntu-latest
     environment: 'prod'
     steps:
