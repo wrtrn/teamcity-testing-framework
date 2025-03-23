@@ -10,7 +10,10 @@ import com.example.teamcity.ui.pages.LoginPage;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Map;
 
 public class BaseUiTest extends BaseTest {
@@ -26,9 +29,16 @@ public class BaseUiTest extends BaseTest {
         Configuration.browserCapabilities.setCapability("selenoid:options", Map.of("enableVNC", true, "enableLog", true));
     }
 
-    @BeforeMethod(alwaysRun = true, onlyForGroups = {"!Setup"})
-    protected void login() {
-        loginAs(testData.getUser());
+    @BeforeMethod(alwaysRun = true)
+    protected void login(Method method) {
+        Test testAnnotation = method.getAnnotation(Test.class);
+        if (testAnnotation != null) {
+            String[] groups = testAnnotation.groups();
+            boolean isSetupGroup = Arrays.stream(groups).anyMatch(g -> g.equals("Setup"));
+            if (!isSetupGroup) {
+                loginAs(testData.getUser());
+            }
+        }
     }
 
     @AfterMethod(alwaysRun = true)
