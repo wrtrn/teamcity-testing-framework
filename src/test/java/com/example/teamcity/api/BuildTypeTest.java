@@ -15,7 +15,7 @@ import static com.example.teamcity.api.enums.Endpoint.*;
 import static com.example.teamcity.api.generators.TestDataGenerator.generate;
 
 public class BuildTypeTest extends BaseApiTest {
-    @Test(description = "User should be able to create build type", groups = {"Positive", "CRUD"})
+    @Test(description = "User should be able to create build type", groups = {"Positive", "CRUD", "Regression"})
     public void userCreatesBuildTypeTest() {
         superUserCheckRequests.getRequest(USERS).create(testData.getUser());
         var userCheckRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
@@ -29,7 +29,7 @@ public class BuildTypeTest extends BaseApiTest {
         softy.assertEquals(testData.getBuildType().getName(), createdBuildType.getName(), "Build type name is not correct");
     }
 
-    @Test(description = "User should not be able to create two build types with the same id", groups = {"Negative", "CRUD"})
+    @Test(description = "User should not be able to create two build types with the same id", groups = {"Negative", "CRUD", "Regression"})
     public void userCreatesTwoBuildTypesWithTheSameIdTest() {
         var buildTypeWithSameId = generate(Arrays.asList(testData.getProject()), BuildType.class, testData.getBuildType().getId());
 
@@ -46,7 +46,7 @@ public class BuildTypeTest extends BaseApiTest {
                 .body(Matchers.containsString("The build configuration / template ID \"%s\" is already used by another configuration or template".formatted(testData.getBuildType().getId())));
     }
 
-    @Test(description = "Project admin should be able to create build type for their project", groups = {"Positive", "Roles"})
+    @Test(description = "Project admin should be able to create build type for their project", groups = {"Positive", "Roles", "Regression"})
     public void projectAdminCreatesBuildTypeTest() {
         String projectId = superUserCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject()).getId();
 
@@ -61,7 +61,7 @@ public class BuildTypeTest extends BaseApiTest {
         softy.assertEquals(testData.getBuildType().getName(), createdBuildType.getName(), "Build type name is not correct");
     }
 
-    @Test(description = "Project admin should not be able to create build type for not their project", groups = {"Negative", "Roles"})
+    @Test(description = "Project admin should not be able to create build type for not their project", groups = {"Negative", "Roles", "Regression"})
     public void projectAdminCreatesBuildTypeForAnotherUserProjectTest() {
         String project1Id = superUserCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject()).getId();
 
