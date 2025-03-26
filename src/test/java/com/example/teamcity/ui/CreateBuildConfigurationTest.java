@@ -8,6 +8,7 @@ import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import com.example.teamcity.api.spec.Specifications;
 import com.example.teamcity.ui.pages.BuildStepsPage;
 import com.example.teamcity.ui.pages.admin.CreateBuildPage;
+import io.qameta.allure.Allure;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
 import org.testng.annotations.Test;
@@ -22,38 +23,49 @@ public class CreateBuildConfigurationTest extends BaseUiTest {
     @Test(description = "User should be able to create build configuration", groups = {"Positive"})
     public void userCreatesBuildConfiguration() {
 
-        // создаем проект через API
         var userCheckRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
-        userCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
 
-        // взаимодействие с UI
-        CreateBuildPage.createWholeBuildConfiguration(testData.getProject().getId(), REPO_URL, testData.getBuildType().getName());
+        Allure.step("Create project via API", () ->
+                userCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject())
+        );
 
-        //проверяем что билд тайп успешно создался на UI
-        BuildStepsPage.BuildConfigurationCreatedSuccessfullyMessage.shouldHave(Condition.text("successfully created"));
+        Allure.step("Create build configuration via UI", () ->
+                CreateBuildPage.createWholeBuildConfiguration(testData.getProject().getId(), REPO_URL, testData.getBuildType().getName())
+        );
 
-        //проверяем, что билд тайп успешно создался через API
-        var createdBuildType = userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read(testData.getBuildType().getName());
+        Allure.step("Verify build configuration creation message in UI", () ->
+                BuildStepsPage.BuildConfigurationCreatedSuccessfullyMessage.shouldHave(Condition.text("successfully created"))
+        );
+
+        var createdBuildType = Allure.step("Verify build configuration was created via API", () ->
+                userCheckRequests.<BuildType>getRequest(BUILD_TYPES).read(testData.getBuildType().getName())
+        );
+
         softy.assertEquals(testData.getBuildType().getName(), createdBuildType.getName(), "Build type name is not correct");
     }
 
     @Test(description = "User can't create a build configuration with an empty Build Configuration Name", groups = {"Negative"})
     public void userCanNotCreateBuildConfWithEmptyName() {
 
-        // создаем проект через API
         var userCheckRequests = new CheckedRequests(Specifications.authSpec(testData.getUser()));
-        userCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject());
 
-        // взаимодействие с UI
-        CreateBuildPage.createWholeBuildConfiguration(testData.getProject().getId(), REPO_URL, "");
+        Allure.step("Create project via API", () ->
+                userCheckRequests.<Project>getRequest(PROJECTS).create(testData.getProject())
+        );
 
-        //проверяем, что билд тайп не создался через UI
-        CreateBuildPage.buildTypeNameError.shouldHave(Condition.exactText("Build configuration name must not be empty"));
+        Allure.step("Attempt to create build configuration with empty name via UI", () ->
+                CreateBuildPage.createWholeBuildConfiguration(testData.getProject().getId(), REPO_URL, "")
+        );
 
-        //проверяем, что билд тайп не создался через API
-        new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_TYPES)
-                .read(testData.getBuildType().getName())
-                .then().assertThat().statusCode(HttpStatus.SC_NOT_FOUND)
-                .body(Matchers.containsString("No build type or template is found by id"));
+        Allure.step("Verify error message in UI", () ->
+                CreateBuildPage.buildTypeNameError.shouldHave(Condition.exactText("Build configuration name must not be empty"))
+        );
+
+        Allure.step("Verify build configuration was not created via API", () ->
+                new UncheckedBase(Specifications.authSpec(testData.getUser()), BUILD_TYPES)
+                        .read(testData.getBuildType().getName())
+                        .then().assertThat().statusCode(HttpStatus.SC_NOT_FOUND)
+                        .body(Matchers.containsString("No build type or template is found by id"))
+        );
     }
 }
