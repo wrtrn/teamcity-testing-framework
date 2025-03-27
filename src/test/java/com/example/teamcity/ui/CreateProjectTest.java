@@ -10,6 +10,7 @@ import io.qameta.allure.Allure;
 import org.testng.annotations.Test;
 
 import static io.qameta.allure.Allure.step;
+import static org.openqa.selenium.devtools.v85.debugger.Debugger.pause;
 
 @Test(groups = {"Regression"})
 public class CreateProjectTest extends BaseUiTest {
@@ -23,6 +24,11 @@ public class CreateProjectTest extends BaseUiTest {
                         .createForm(REPO_URL)
                         .setupProject(testData.getProject().getName(), testData.getBuildType().getName())
         );
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         var createdProject = Allure.step("Verify project was created via API", () ->
                 superUserCheckRequests.<Project>getRequest(Endpoint.PROJECTS).read("name:" + testData.getProject().getName())
